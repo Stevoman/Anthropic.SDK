@@ -170,6 +170,26 @@ namespace Anthropic.SDK.Extensions
         }
 
         /// <summary>
+        /// Sets the display mode for thinking blocks. Use <see cref="ThinkingDisplay.omitted"/> to receive
+        /// thinking blocks with an empty thinking field but with the signature preserved for multi-turn
+        /// continuity. Billing is unchanged.
+        /// </summary>
+        /// <param name="options">The ChatOptions instance</param>
+        /// <param name="display">The desired display mode</param>
+        /// <returns>The ChatOptions instance for fluent chaining</returns>
+        public static ChatOptions WithThinkingDisplay(this ChatOptions options, ThinkingDisplay display)
+        {
+            if (options == null)
+                throw new ArgumentNullException(nameof(options));
+
+            var parameters = options.GetThinkingParameters()
+                ?? throw new InvalidOperationException("Call WithThinking (or equivalent) before WithThinkingDisplay.");
+
+            parameters.Display = display;
+            return options;
+        }
+
+        /// <summary>
         /// Enables strict mode for tool use, which guarantees that tool inputs conform exactly to the schema.
         /// Requires the structured-outputs-2025-11-13 beta header (automatically added).
         /// Note: Strict tools are automatically enabled when using ResponseFormat with a JSON schema.

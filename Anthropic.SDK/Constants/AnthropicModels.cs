@@ -12,6 +12,11 @@ namespace Anthropic.SDK.Constants
         /// <summary>
         /// Claude Fable 5
         /// </summary>
+        public const string ClaudeSonnet5 = "claude-sonnet-5";
+
+        /// <summary>
+        /// Claude Fable 5
+        /// </summary>
         public const string ClaudeFable5 = "claude-fable-5";
 
         /// <summary>

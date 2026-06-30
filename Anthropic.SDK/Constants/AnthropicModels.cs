@@ -10,6 +10,11 @@ namespace Anthropic.SDK.Constants
     public static class AnthropicModels
     {
         /// <summary>
+        /// Claude Fable 5
+        /// </summary>
+        public const string ClaudeFable5 = "claude-fable-5";
+
+        /// <summary>
         /// Claude 4.8 Opus
         /// </summary>
         public const string Claude48Opus = "claude-opus-4-8";

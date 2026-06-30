@@ -25,6 +25,9 @@ namespace Anthropic.SDK.Messaging
         [JsonPropertyName("stop_reason")]
         public string StopReason { get; set; }
 
+        [JsonPropertyName("stop_details")]
+        public StopDetails StopDetails { get; set; }
+
         [JsonPropertyName("stop_sequence")]
         public object StopSequence { get; set; }
 
@@ -58,7 +61,34 @@ namespace Anthropic.SDK.Messaging
         [JsonPropertyName("container")]
         public ContainerResponse Container { get; set; }
 
-        
+
+    }
+
+    public class StopDetails
+    {
+        [JsonPropertyName("type")]
+        public string Type { get; set; }
+
+        /// <summary>
+        /// Policy area that triggered the classifier: "cyber", "bio",
+        /// "reasoning_extraction", or null when it maps to no named category.
+        /// </summary>
+        [JsonPropertyName("category")]
+        public string Category { get; set; }
+
+        /// <summary>
+        /// Human-readable description of the decline. The text is not stable —
+        /// display it, do not parse it.
+        /// </summary>
+        [JsonPropertyName("explanation")]
+        public string Explanation { get; set; }
+
+        /// <summary>
+        /// A model to retry directly when a fallback attempt was skipped
+        /// (e.g. the fallback model was rate limited). May be null.
+        /// </summary>
+        [JsonPropertyName("recommended_model")]
+        public string RecommendedModel { get; set; }
     }
 
     public class StreamMessage

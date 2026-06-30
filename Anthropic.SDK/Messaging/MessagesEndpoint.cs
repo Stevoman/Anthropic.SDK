@@ -208,6 +208,24 @@ namespace Anthropic.SDK.Messaging
                 }
             }
 
+            // Add server-side fallback beta header when fallbacks are requested
+            if (parameters.Fallbacks != null && parameters.Fallbacks.Count > 0)
+            {
+                additionalHeaders ??= new Dictionary<string, string>();
+                var existingBeta = additionalHeaders.TryGetValue("anthropic-beta", out var beta)
+                    ? beta
+                    : Client.AnthropicBetaVersion;
+                var fallbackBeta = "server-side-fallback-2026-06-01";
+
+                if (!existingBeta.Contains(fallbackBeta))
+                {
+                    var combinedBeta = string.IsNullOrWhiteSpace(existingBeta)
+                        ? fallbackBeta
+                        : $"{existingBeta},{fallbackBeta}";
+                    additionalHeaders["anthropic-beta"] = combinedBeta;
+                }
+            }
+
             return additionalHeaders;
         }
 

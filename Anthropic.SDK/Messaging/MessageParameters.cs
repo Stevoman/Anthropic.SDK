@@ -75,6 +75,16 @@ namespace Anthropic.SDK.Messaging
         public Container Container { get; set; }
 
         /// <summary>
+        /// Server-side fallback models. When the primary model declines a request
+        /// with stop_reason "refusal", the API retries the next model in this list
+        /// on the same request. Requires the server-side-fallback beta header,
+        /// which the SDK adds automatically when this is set. Tried in order; each
+        /// entry must differ from the others and from the requested model.
+        /// </summary>
+        [JsonPropertyName("fallbacks")]
+        public List<Fallback> Fallbacks { get; set; }
+
+        /// <summary>
         /// Prompt Cache Type Definitions. Designed to be used as a bitwise assignment if you want to cache multiple types and are caching enough context.
         /// </summary>
         [JsonIgnore]

@@ -416,7 +416,11 @@ namespace Anthropic.SDK.Common
 
         private (Function function, object[] invokeArgs) ValidateFunctionArguments(CancellationToken cancellationToken = default)
         {
-            if (Parameters != null && Parameters.AsObject().Count > 0 && Arguments == null)
+            // Guard for "the model was expected to supply arguments but didn't". Check the schema's
+            // declared properties, not the schema object's own key count — a zero-parameter function
+            // (e.g. mpep_guide) still has a schema of {"type":"object","properties":{}}, whose top-level
+            // key count is > 0, which would otherwise false-trip this guard.
+            if (Parameters?["properties"] is JsonObject properties && properties.Count > 0 && Arguments == null)
             {
                 throw new ArgumentException($"Function {Name} has parameters but no arguments are set.");
             }

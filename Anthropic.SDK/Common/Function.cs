@@ -431,9 +431,14 @@ namespace Anthropic.SDK.Common
                 throw new InvalidOperationException($"Failed to find a valid method for {Name}");
             }
 
-            var requestedArgs = arguments != null
-                ? JsonSerializer.Deserialize<Dictionary<string, object>>(Arguments.ToString())
-                : new();
+            // A tool with no arguments (e.g. a zero-parameter function) can arrive with Arguments
+            // set to an empty/whitespace value — notably from the streaming path, where an empty
+            // argument string is stored as a (non-null) JsonValue(""). Treat that as no arguments
+            // rather than attempting to deserialize "", which throws "input does not contain any JSON tokens".
+            var argumentsText = Arguments?.ToString();
+            var requestedArgs = string.IsNullOrWhiteSpace(argumentsText)
+                ? new Dictionary<string, object>()
+                : JsonSerializer.Deserialize<Dictionary<string, object>>(argumentsText);
             var methodParams = function.MethodInfo.GetParameters();
             var invokeArgs = new object[methodParams.Length];
 

@@ -137,7 +137,10 @@ namespace Anthropic.SDK.Messaging
                     if (tool != null)
                     {
                         var copiedTool = new Common.Tool(tool);
-                        copiedTool.Function.Arguments = arguments;
+                        // A zero-argument tool streams no partial JSON, leaving `arguments` empty.
+                        // Store null rather than an empty-string JsonValue so downstream argument
+                        // validation treats it as "no arguments".
+                        copiedTool.Function.Arguments = string.IsNullOrWhiteSpace(arguments) ? null : arguments;
                         copiedTool.Function.Id = id;
 
                         toolCalls.Add(copiedTool.Function);

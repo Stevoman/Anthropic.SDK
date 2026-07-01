@@ -17,9 +17,9 @@
 		  Sonnet 5 Series
 	  </PackageReleaseNotes>
 	  <PackageId>Anthropic.SDK</PackageId>
-	  <Version>5.10.3</Version>
+	  <Version>5.10.4</Version>
 	  <AssemblyVersion>5.5.0.0</AssemblyVersion>
-	  <FileVersion>5.10.3.0</FileVersion>
+	  <FileVersion>5.10.4.0</FileVersion>
 	  <GenerateDocumentationFile>True</GenerateDocumentationFile>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
 	  <PackageIcon>icon.png</PackageIcon>

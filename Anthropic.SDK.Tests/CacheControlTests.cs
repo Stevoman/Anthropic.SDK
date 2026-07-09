@@ -91,6 +91,63 @@ namespace Anthropic.SDK.Tests
         }
 
         [TestMethod]
+        public async Task TestAutomaticMessageCaching()
+        {
+            string resourceName = "Anthropic.SDK.Tests.BillyBudd.txt";
+
+            Assembly assembly = Assembly.GetExecutingAssembly();
+
+            await using Stream stream = assembly.GetManifestResourceStream(resourceName);
+            using StreamReader reader = new StreamReader(stream);
+            string content = await reader.ReadToEndAsync();
+
+            var client = new AnthropicClient();
+            var messages = new List<Message>()
+            {
+                new Message(RoleType.User, "What are the key literary themes of this novel?"),
+            };
+            var systemMessages = new List<SystemMessage>()
+            {
+                new SystemMessage("You are an expert at analyzing literary texts."),
+                new SystemMessage(content)
+            };
+
+            var parameters = new MessageParameters()
+            {
+                Messages = messages,
+                MaxTokens = 1024,
+                Model = AnthropicModels.Claude45Sonnet,
+                Stream = false,
+                Temperature = 0m,
+                System = systemMessages,
+                // No manual cache_control anywhere - a single top-level breakpoint that Anthropic
+                // slides forward automatically as the conversation (system + messages) grows.
+                PromptCaching = PromptCacheType.AutomaticMessages
+            };
+            var res = await client.Messages.GetClaudeMessageAsync(parameters);
+
+            Debug.WriteLine(res.Message);
+            Assert.IsTrue(res.Usage.CacheCreationInputTokens > 0 || res.Usage.CacheReadInputTokens > 0);
+
+            messages.Add(res.Message);
+            messages.Add(new Message(RoleType.User, "Who is the main character and how old is he?"));
+
+            var res2 = await client.Messages.GetClaudeMessageAsync(parameters);
+
+            // The breakpoint slid forward automatically, so the prior turn is now a cache hit.
+            Assert.IsTrue(res2.Usage.CacheReadInputTokens > 0);
+            Assert.IsNotNull(res2.Message.ToString());
+
+            messages.Add(res2.Message);
+            messages.Add(new Message(RoleType.User, "Who is the main antagonist and how old is he?"));
+
+            var res3 = await client.Messages.GetClaudeMessageAsync(parameters);
+
+            Assert.IsTrue(res3.Usage.CacheReadInputTokens > 0);
+            Assert.IsNotNull(res3.Message.ToString());
+        }
+
+        [TestMethod]
         public async Task TestSingleToolAllowsCacheIndependentOfToolSize()
         {
             string resourceName = "Anthropic.SDK.Tests.BillyBudd.txt";

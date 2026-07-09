@@ -89,5 +89,16 @@ namespace Anthropic.SDK.Messaging
         /// </summary>
         [JsonIgnore]
         public PromptCacheType PromptCaching { get; set; } = PromptCacheType.None;
+
+        /// <summary>
+        /// Top-level cache control for the request. When set - directly, or automatically via
+        /// <see cref="PromptCacheType.AutomaticMessages"/> in <see cref="PromptCaching"/> - Anthropic
+        /// automatically places and slides a single cache breakpoint forward across turns, so growing
+        /// conversation content (including tool calls and tool results) is cached without managing
+        /// per-message breakpoints by hand.
+        /// See https://platform.claude.com/docs/en/build-with-claude/prompt-caching.
+        /// </summary>
+        [JsonPropertyName("cache_control")]
+        public CacheControl CacheControl { get; set; }
     }
 }

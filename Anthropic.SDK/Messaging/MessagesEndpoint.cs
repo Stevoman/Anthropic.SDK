@@ -60,17 +60,15 @@ namespace Anthropic.SDK.Messaging
 
         private static void SetCacheControls(MessageParameters parameters)
         {
-            if (parameters.PromptCaching == PromptCacheType.FineGrained)
-            {
-                // just use each one's cache control, assume they are already set
-            }
-            else if (parameters.PromptCaching == PromptCacheType.AutomaticToolsAndSystem)
+            // FineGrained: just use each content block's cache control, assume they are already set.
+
+            if ((parameters.PromptCaching & PromptCacheType.AutomaticToolsAndSystem) == PromptCacheType.AutomaticToolsAndSystem)
             {
                 // Set ephemeral cache control on the last system message if any exist
                 if (parameters.System != null && parameters.System.Any())
                 {
                     var lastSystemMessage = parameters.System.Last();
-                    
+
                     // Only set cache control if not already set
                     if (lastSystemMessage.CacheControl == null)
                     {
@@ -80,12 +78,12 @@ namespace Anthropic.SDK.Messaging
                         };
                     }
                 }
-                
+
                 // Set ephemeral cache control on the last tool if any exist
                 if (parameters.Tools != null && parameters.Tools.Any())
                 {
                     var lastTool = parameters.Tools.Last();
-                    
+
                     // Only set cache control if not already set
                     if (lastTool.Function.CacheControl == null)
                     {
@@ -94,6 +92,19 @@ namespace Anthropic.SDK.Messaging
                             Type = CacheControlType.ephemeral
                         };
                     }
+                }
+            }
+
+            if ((parameters.PromptCaching & PromptCacheType.AutomaticMessages) == PromptCacheType.AutomaticMessages)
+            {
+                // Only set the top-level cache control if the caller hasn't already supplied one
+                // (e.g. to pick a non-default TTL for the rolling breakpoint).
+                if (parameters.CacheControl == null)
+                {
+                    parameters.CacheControl = new CacheControl()
+                    {
+                        Type = CacheControlType.ephemeral
+                    };
                 }
             }
         }

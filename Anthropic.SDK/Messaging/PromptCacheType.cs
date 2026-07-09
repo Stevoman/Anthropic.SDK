@@ -20,4 +20,11 @@ public enum PromptCacheType
     /// Use the cache-control instructions from the system messages for automatic tools and system message caching
     /// </summary>
     AutomaticToolsAndSystem = 2,
+    /// <summary>
+    /// Automatically manage a single cache-control breakpoint at the top level of the request. Anthropic
+    /// slides this breakpoint forward on every call, so the growing conversation - including tool_use/tool_result
+    /// content from earlier turns - stays cached without having to place per-message breakpoints by hand. Combine
+    /// with <see cref="FineGrained"/> to keep manual breakpoints (e.g. on documents) alongside this one.
+    /// </summary>
+    AutomaticMessages = 4,
 }

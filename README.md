@@ -569,6 +569,35 @@ Console.WriteLine(res2.Usage.CacheReadInputTokens);
 //more turns
 ```
 
+There is also `AutomaticMessages`, which places a single `cache_control` breakpoint at the top level of the request. Anthropic slides this breakpoint forward on every call, so the whole growing conversation - system prompt, prior turns, and any tool_use/tool_result content from earlier turns - stays cached without you tracking where the last breakpoint went. This is the best fit for multi-turn agentic loops (e.g. tool-calling conversations) where each turn appends new content you still want cached on the next call.
+
+```csharp
+var parameters = new MessageParameters()
+{
+    Messages = messages,
+    MaxTokens = 1024,
+    Model = AnthropicModels.Claude46Sonnet,
+    Stream = false,
+    System = systemMessages,
+    Tools = tools,
+    //Automatically caches the growing conversation, including tool results from earlier turns
+    PromptCaching = PromptCacheType.AutomaticMessages
+};
+var res = await client.Messages.GetClaudeMessageAsync(parameters);
+```
+
+`PromptCacheType` is a `[Flags]` enum, so `AutomaticMessages` can be combined with `FineGrained` to keep manual breakpoints (e.g. on a large document you want cached at a longer TTL) alongside the automatic rolling one:
+
+```csharp
+PromptCaching = PromptCacheType.FineGrained | PromptCacheType.AutomaticMessages
+```
+
+To control the TTL of the automatic breakpoint (default is the 5-minute ephemeral cache), set `CacheControl` on `MessageParameters` yourself before calling - the SDK only fills it in when you haven't already set it:
+
+```csharp
+parameters.CacheControl = new CacheControl() { Type = CacheControlType.ephemeral, TTL = CacheDuration.OneHour };
+```
+
 See unit tests for additional examples.
 
 ### Document Support

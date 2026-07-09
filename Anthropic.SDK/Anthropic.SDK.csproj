@@ -14,12 +14,12 @@
 	  <PackageTags>Claude, AI, ML, API, Anthropic</PackageTags>
 	  <Title>Claude API</Title>
 	  <PackageReleaseNotes>
-		  Sonnet 5 Series
+		  Automatic message caching: PromptCacheType.AutomaticMessages places a single top-level cache_control breakpoint that Anthropic slides forward across turns, so growing conversations (including tool call/result content) stay cached without manual breakpoint management.
 	  </PackageReleaseNotes>
 	  <PackageId>Anthropic.SDK</PackageId>
-	  <Version>5.10.5</Version>
+	  <Version>5.10.6</Version>
 	  <AssemblyVersion>5.5.0.0</AssemblyVersion>
-	  <FileVersion>5.10.5.0</FileVersion>
+	  <FileVersion>5.10.6.0</FileVersion>
 	  <GenerateDocumentationFile>True</GenerateDocumentationFile>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
 	  <PackageIcon>icon.png</PackageIcon>

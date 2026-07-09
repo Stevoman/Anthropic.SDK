@@ -49,14 +49,26 @@ namespace Anthropic.SDK.Messaging
 
         public Message(Function toolCall, string data, string mediaType, bool isError = false, CacheControl cacheControl = null)
         {
+            bool isImage = mediaType != null && mediaType.StartsWith("image/", StringComparison.OrdinalIgnoreCase);
+
+            ContentBase resultBlock = isImage
+                ? new ImageContent() { Source = new ImageSource()
+                {
+                    Type = SourceType.base64,
+                    Data = data,
+                    MediaType = mediaType
+                } }
+                : new DocumentContent() { Source = new DocumentSource()
+                {
+                    Type = SourceType.base64,
+                    Data = data,
+                    MediaType = mediaType
+                } };
+
             Content = new List<ContentBase>() { new ToolResultContent()
             {
                 ToolUseId = toolCall.Id,
-                Content = new List<ContentBase>() { new ImageContent() { Source = new ImageSource()
-                {
-                    Data = data,
-                    MediaType = mediaType
-                } }},
+                Content = new List<ContentBase>() { resultBlock },
                 CacheControl = cacheControl
             }};
             if (isError)

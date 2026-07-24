@@ -62,6 +62,9 @@ namespace Anthropic.SDK.Messaging
         // Ordered longest-prefix-first so that more specific entries match before shorter ones.
         private static readonly List<(string Prefix, ModelPricing Pricing)> BuiltInPricing = new()
         {
+            // Opus 5 — $5 input, $25 output
+            ("claude-opus-5", new ModelPricing(5m, 25m)),
+
             // Opus 4.6 / 4.5 — $5 input, $25 output
             ("claude-opus-4-6", new ModelPricing(5m, 25m)),
             ("claude-opus-4-5", new ModelPricing(5m, 25m)),

@@ -62,6 +62,10 @@ namespace Anthropic.SDK.Messaging
         // Ordered longest-prefix-first so that more specific entries match before shorter ones.
         private static readonly List<(string Prefix, ModelPricing Pricing)> BuiltInPricing = new()
         {
+            // Opus 5.5 — $4 input, $20 output; cache reads are 0.05x input ($0.20), not the usual 0.1x.
+            // Must precede "claude-opus-5", which is a prefix of this ID.
+            ("claude-opus-5-5", new ModelPricing(4m, 20m, cacheReadCostPerMillion: 0.20m)),
+
             // Opus 5 — $5 input, $25 output
             ("claude-opus-5", new ModelPricing(5m, 25m)),
 

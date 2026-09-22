@@ -14,12 +14,12 @@
 	  <PackageTags>Claude, AI, ML, API, Anthropic</PackageTags>
 	  <Title>Claude API</Title>
 	  <PackageReleaseNotes>
-		  Added support for Claude Opus 5 (claude-opus-5), including the AnthropicModels/VertexAIModels constants and built-in pricing ($5 input / $25 output per MTok).
+		  Added support for Claude Opus 5.5 (claude-opus-5-5), including the AnthropicModels/VertexAIModels constants and built-in pricing ($4 input / $20 output / $0.20 cache read per MTok).
 	  </PackageReleaseNotes>
 	  <PackageId>Anthropic.SDK</PackageId>
-	  <Version>5.10.7</Version>
+	  <Version>5.10.8</Version>
 	  <AssemblyVersion>5.5.0.0</AssemblyVersion>
-	  <FileVersion>5.10.7.0</FileVersion>
+	  <FileVersion>5.10.8.0</FileVersion>
 	  <GenerateDocumentationFile>True</GenerateDocumentationFile>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
 	  <PackageIcon>icon.png</PackageIcon>

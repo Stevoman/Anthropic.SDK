@@ -62,5 +62,10 @@ namespace Anthropic.SDK.Constants
         /// Claude 5.5 Opus on Vertex AI
         /// </summary>
         public const string ClaudeOpus5_5 = "claude-opus-5-5";
+
+        /// <summary>
+        /// Claude 5.5 Sonnet on Vertex AI
+        /// </summary>
+        public const string ClaudeSonnet5_5 = "claude-sonnet-5-5";
     }
 }

@@ -79,6 +79,10 @@ namespace Anthropic.SDK.Messaging
             // Opus 4 — $15 input, $75 output
             ("claude-opus-4", new ModelPricing(15m, 75m)),
 
+            // Sonnet 5.5 / 5 — $3 input, $15 output. 5.5 must precede "claude-sonnet-5", which is a prefix of its ID.
+            ("claude-sonnet-5-5", new ModelPricing(3m, 15m)),
+            ("claude-sonnet-5", new ModelPricing(3m, 15m)),
+
             // Sonnet 4.6 — $3 input, $15 output
             ("claude-sonnet-4-6", new ModelPricing(3m, 15m)),
 

@@ -14,12 +14,12 @@
 	  <PackageTags>Claude, AI, ML, API, Anthropic</PackageTags>
 	  <Title>Claude API</Title>
 	  <PackageReleaseNotes>
-		  Added support for Claude Sonnet 5.5 (claude-sonnet-5-5), including the AnthropicModels/VertexAIModels constants and built-in pricing ($3 input / $15 output per MTok; same pricing also registered for claude-sonnet-5).
+		  Added support for Claude Haiku 5.5 (claude-haiku-5-5), including the AnthropicModels/VertexAIModels constants and built-in pricing ($0.10 input / $0.50 output per MTok for prompts up to 100,000 tokens, $0.50 / $2.50 above). ModelPricing gains an optional long-prompt tier (WithLongPromptTier / ForPromptTokens), which CalculateCost applies by total prompt length. Pricing updates: Sonnet 5.5 is now $2 / $10 with $0.10 cache reads; Sonnet 5 is $2 / $10; Opus 4.8 and 4.7 are now priced at $5 / $25 instead of falling through to Opus 4's $15 / $75; Fable 5 is priced at $10 / $50.
 	  </PackageReleaseNotes>
 	  <PackageId>Anthropic.SDK</PackageId>
-	  <Version>5.10.9</Version>
+	  <Version>5.10.10</Version>
 	  <AssemblyVersion>5.5.0.0</AssemblyVersion>
-	  <FileVersion>5.10.9.0</FileVersion>
+	  <FileVersion>5.10.10.0</FileVersion>
 	  <GenerateDocumentationFile>True</GenerateDocumentationFile>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
 	  <PackageIcon>icon.png</PackageIcon>

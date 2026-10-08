@@ -88,6 +88,12 @@ namespace Anthropic.SDK.Extensions
                     "Use ModelPricing.Register() to add pricing, or pass overridePricing.");
             }
 
+            // Models priced by prompt length (e.g. Haiku 5.5) count every input token, cached or not.
+            int cacheWriteTokens = Math.Max(
+                usage.CacheCreationInputTokens,
+                (usage.CacheCreation?.Ephemeral5mInputTokens ?? 0) + (usage.CacheCreation?.Ephemeral1hInputTokens ?? 0));
+            pricing = pricing.ForPromptTokens(usage.InputTokens + usage.CacheReadInputTokens + cacheWriteTokens);
+
             decimal batchMultiplier = usage.ServiceTier == ServiceTier.Batch ? 0.5m : 1m;
 
             decimal inputCost = usage.InputTokens / PerMillionDivisor

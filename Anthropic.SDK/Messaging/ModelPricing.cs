@@ -57,11 +57,50 @@ namespace Anthropic.SDK.Messaging
             WebSearchCostPer1000 = webSearchCostPer1000 ?? 10m;
         }
 
+        /// <summary>
+        /// Prompt length, in tokens, above which <see cref="LongPromptPricing"/> applies instead of this pricing.
+        /// Null when the model is priced the same at every prompt length.
+        /// </summary>
+        public int? LongPromptThresholdTokens { get; private set; }
+
+        /// <summary>
+        /// Pricing for requests whose prompt exceeds <see cref="LongPromptThresholdTokens"/>
+        /// (e.g. Claude Haiku 5.5 above 100,000 tokens). Null when there is no such tier.
+        /// </summary>
+        public ModelPricing LongPromptPricing { get; private set; }
+
+        /// <summary>
+        /// Returns a copy of this pricing that switches to <paramref name="longPromptPricing"/>
+        /// for prompts longer than <paramref name="thresholdTokens"/>.
+        /// </summary>
+        public ModelPricing WithLongPromptTier(int thresholdTokens, ModelPricing longPromptPricing)
+        {
+            if (thresholdTokens <= 0)
+                throw new ArgumentOutOfRangeException(nameof(thresholdTokens));
+
+            var copy = (ModelPricing)MemberwiseClone();
+            copy.LongPromptThresholdTokens = thresholdTokens;
+            copy.LongPromptPricing = longPromptPricing ?? throw new ArgumentNullException(nameof(longPromptPricing));
+            return copy;
+        }
+
+        /// <summary>
+        /// The pricing that applies to a request with the given prompt length. The prompt counts every
+        /// input token: uncached input, cache reads, and cache writes.
+        /// </summary>
+        public ModelPricing ForPromptTokens(int promptTokens) =>
+            LongPromptPricing != null && promptTokens > LongPromptThresholdTokens
+                ? LongPromptPricing
+                : this;
+
         private static readonly ConcurrentDictionary<string, ModelPricing> CustomPricing = new();
 
         // Ordered longest-prefix-first so that more specific entries match before shorter ones.
         private static readonly List<(string Prefix, ModelPricing Pricing)> BuiltInPricing = new()
         {
+            // Fable 5 — $10 input, $50 output
+            ("claude-fable-5", new ModelPricing(10m, 50m)),
+
             // Opus 5.5 — $4 input, $20 output; cache reads are 0.05x input ($0.20), not the usual 0.1x.
             // Must precede "claude-opus-5", which is a prefix of this ID.
             ("claude-opus-5-5", new ModelPricing(4m, 20m, cacheReadCostPerMillion: 0.20m)),
@@ -69,7 +108,9 @@ namespace Anthropic.SDK.Messaging
             // Opus 5 — $5 input, $25 output
             ("claude-opus-5", new ModelPricing(5m, 25m)),
 
-            // Opus 4.6 / 4.5 — $5 input, $25 output
+            // Opus 4.8 / 4.7 / 4.6 / 4.5 — $5 input, $25 output. All must precede "claude-opus-4" ($15/$75).
+            ("claude-opus-4-8", new ModelPricing(5m, 25m)),
+            ("claude-opus-4-7", new ModelPricing(5m, 25m)),
             ("claude-opus-4-6", new ModelPricing(5m, 25m)),
             ("claude-opus-4-5", new ModelPricing(5m, 25m)),
 
@@ -79,9 +120,12 @@ namespace Anthropic.SDK.Messaging
             // Opus 4 — $15 input, $75 output
             ("claude-opus-4", new ModelPricing(15m, 75m)),
 
-            // Sonnet 5.5 / 5 — $3 input, $15 output. 5.5 must precede "claude-sonnet-5", which is a prefix of its ID.
-            ("claude-sonnet-5-5", new ModelPricing(3m, 15m)),
-            ("claude-sonnet-5", new ModelPricing(3m, 15m)),
+            // Sonnet 5.5 — $2 input, $10 output; cache reads are 0.05x input ($0.10), not the usual 0.1x.
+            // Must precede "claude-sonnet-5", which is a prefix of this ID.
+            ("claude-sonnet-5-5", new ModelPricing(2m, 10m, cacheReadCostPerMillion: 0.10m)),
+
+            // Sonnet 5 — $2 input, $10 output (the introductory price became permanent; the planned $3/$15 was cancelled)
+            ("claude-sonnet-5", new ModelPricing(2m, 10m)),
 
             // Sonnet 4.6 — $3 input, $15 output
             ("claude-sonnet-4-6", new ModelPricing(3m, 15m)),
@@ -94,6 +138,11 @@ namespace Anthropic.SDK.Messaging
 
             // Sonnet 3.7 — $3 input, $15 output
             ("claude-3-7-sonnet", new ModelPricing(3m, 15m)),
+
+            // Haiku 5.5 — $0.10 input, $0.50 output for prompts up to 100,000 tokens;
+            // $0.50 input, $2.50 output above that. Cache multipliers are the standard ones in both tiers.
+            ("claude-haiku-5-5", new ModelPricing(0.10m, 0.50m)
+                .WithLongPromptTier(100_000, new ModelPricing(0.50m, 2.50m))),
 
             // Haiku 4.5 — $1 input, $5 output
             ("claude-haiku-4-5", new ModelPricing(1m, 5m)),
